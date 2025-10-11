@@ -1,8 +1,36 @@
 Docker Threat Modeling
 Given Docker's system components and the STRIDE framework, identify five potential threats that may arise.
 
+1) Information Disclosure: Inside the file vuln_app/config/dev.yaml the password for the DB is revealed to be postgres. If this file is uploaded to a public repository in git anyone can use it to access the DB and acquire all of the information contained within it.
+
+2) Tampering: A SQL Injection attack is a potential threat that a bad actor could use to remove data. If a user is able to enter SQL code that drops a table inside the add a new student page, and if the application drops the table then it is susceptible to a SQL Injection attack.
+
+3) Spoofing: The web application runs unencrypted on port 8080. An attacker could run a man in the middle attack in which he hosts a website with a very similar name of the website, spoofing it, copies all of the information victims send to it and then passes it along to the real website. And replies with information with the real website – after copying it.
+
+4) Repudiation: If the website becomes spoofed, described in #3 above, then the attacker could hijack the user’s session and perform actions that the victim cannot prove that he didn’t do it. An action such as running a SQL injection attack.
+
+5). Elevation of Privilege:If an attacker was able to break out of the container that is running the application he could access the OS and launch a container with excess root priviledge.
+
+
 Kubernetes Threat Modeling
 Given Kubernetes' system components and the STRIDE framework, identify five potential threats that may arise.
 
-Docker-bench Run Results and Analysis
-From the failed findings, select and document 3 findings from the Docker-bench results that you want to harden based on the 5 attack surface areas you identified in Step 1. At least 1 of the 3 hardened findings should be different from the ones mentioned in the exercise (i.e. 5.10, 5.14, and 5.22).
+1) Information Disclosure: Sensitive information is stored in etcd such as passwords and keys. If a backup of this directory is kept unsecured then an attacker could obtain it and use the credentials to acquire information that he is not entiteled to.
+
+2) Tampering: The etcd directory contains configuration data such as network policies. If an attacker accessed this directory he could change these rules and render the application unreachable for users.
+
+3) Denial of Service: An attacker could utilize a botnet to send a large volume of requests to application and the control plane will be unable to respond to them all – thus denying service to users.
+
+4)Spoofing: An attacker could obtain a kubelet’s credentials if he’s able to compromise it. He could then trick the control plane into believing it is healthy by impersonating it.
+
+5) Elevation of Privilege: A worker node could be attacked and an attacker could break out of the container. He could access the OS and launch a container with excess root priviledge.
+
+3 failed findings from the Docker-bench results that I will harden:
+
+4.5 Ensure Content trust for Docker is Enabled: In the threat model I indicated that spoofing was a risk. With the content trust disabled a spoofed image could be downloaded from a remote docker registry 
+
+3.2 Ensure that docker.service file permissions are appropriately set: In the threat model I stated that tampering was a risk. If any user is allowed to edit the docker.service file then an attacker could edit sensitive parameters contained within it that will alter the behavior of the Docker daemon.
+
+2.2 Ensure network traffic is restricted between containers on the default bridge: In the threat model I wrote that information disclosure was a risk. All network traffic is allowed between containers on the same host by default. If an attacker was able to breach a container he could read all the packets across the entire host.
+
+
