@@ -1,0 +1,17 @@
+1. Incident commander name:
+Ben
+
+2. Executive Summary of what happened:
+Three pods were created that ran 3 different crypto miners: cryptotonight, minergate, and moneropool.
+
+3. Summary of what was affected: 
+The CPU utilization spiked precipitously.
+
+4. Summmry of the impact:
+The three pods utilized resources that could have been used by legitimate pods. Moreover, those three pods ran software that wasn't vetted and could introduce further vulnerabilities into the system.
+
+5. Summary of the remediation steps:
+The three pods were evicted.
+
+6. Summary of lessons learned:
+Alerts should be created that trigger when CPU resources rise precipitously. The controllers that admit containers should be configured to block unknown images from creating containers.
